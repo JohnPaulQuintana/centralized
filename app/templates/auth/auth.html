@@ -1,17 +1,19 @@
 <!-- app/templates/auth.html -->
 {% extends "base.html" %}
 
-{% block title %}Login{% endblock %}
+{% block title %}Login · Centralized{% endblock %}
 
 {% block head_extra %}
   <script src="/static/js/auth.js"></script>
 {% endblock %}
 
 {% block content %}
-<div class="flex items-center justify-center h-screen">
-  <div class="text-center">
-    <h1 class="text-2xl font-bold mb-4">Login with Google</h1>
+<div class="flex items-center justify-center min-h-screen bg-gray-50 px-4">
+  <div class="bg-white shadow-lg rounded-xl w-full max-w-md p-8 text-center">
+    <h1 class="text-3xl font-bold text-green-600 mb-4 uppercase">Centralized</h1>
+    <p class="text-gray-600 mb-6">Sign in with Google to continue</p>
 
+    <!-- Google Sign-In -->
     <div id="g_id_onload"
          data-client_id="266581007685-pd687uda2mlgdgccdbbnsedk2lu6ssb4.apps.googleusercontent.com"
          data-callback="handleCredentialResponse"
@@ -25,6 +27,8 @@
          data-text="sign_in_with"
          data-shape="rectangular"
          data-logo_alignment="left"></div>
+
+    <p class="text-sm text-gray-400 mt-6">© 2025 Centralized. Powered by Google OAuth.</p>
   </div>
 </div>
 {% endblock %}
