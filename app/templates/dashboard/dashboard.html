@@ -1,0 +1,213 @@
+{% extends "base.html" %} {% block title %}Analytics Dashboard{% endblock %} {%
+block content %}
+<div class="bg-green-50 text-gray-800 h-screen overflow-hidden">
+  <!-- Mobile Navbar -->
+  <div
+    class="md:hidden flex justify-between items-center px-4 py-3 bg-white border-b shadow-sm"
+  >
+    <button onclick="toggleSidebar()" class="text-green-700">
+      <i data-lucide="menu" class="w-6 h-6"></i>
+    </button>
+    <img
+      src="{{ user.picture }}"
+      alt="User"
+      class="w-9 h-9 rounded-full border object-cover"
+    />
+  </div>
+
+  <!-- Sidebar Overlay (Mobile only) -->
+  <div
+    id="sidebar-backdrop"
+    class="fixed inset-0 bg-black bg-opacity-40 z-20 hidden md:hidden"
+    onclick="closeSidebar()"
+  ></div>
+
+  <div class="grid grid-cols-1 md:grid-cols-[260px,1fr] h-full w-full">
+    <!-- Sidebar -->
+    <aside
+      id="sidebar"
+      class="bg-white shadow-md px-6 py-8 space-y-8 z-30 border-r fixed top-0 left-0 h-screen w-64 transform transition-transform duration-300 ease-in-out -translate-x-full md:translate-x-0 md:relative md:block"
+    >
+      <div
+        class="text-2xl font-extrabold text-green-600 flex items-center gap-2"
+      >
+        <i data-lucide="bar-chart-3" class="w-6 h-6"></i> Tracker
+      </div>
+
+      <div>
+        <p class="text-gray-600 text-sm">Logged in as</p>
+        <div class="font-semibold">{{ user.name }}</div>
+        <div class="text-sm text-gray-500">{{ user.email }}</div>
+      </div>
+
+      <button
+        onclick="logout()"
+        class="w-full mt-4 bg-red-500 text-white py-2 rounded-lg hover:bg-red-600 transition"
+      >
+        Logout
+      </button>
+    </aside>
+
+    <!-- Main Content -->
+    <main class="relative flex flex-col h-screen overflow-hidden">
+      <!-- Sticky Header -->
+      <header class="sticky top-0 z-10 bg-white shadow-sm border-b px-6 py-4">
+        <div
+          class="flex flex-col md:flex-row md:items-center md:justify-between gap-4"
+        >
+          <div>
+            <h1
+              class="text-xl md:text-2xl font-bold text-green-700 flex items-center gap-2"
+            >
+              <i data-lucide="pie-chart" class="w-6 h-6 text-green-500"></i>
+              Analytics Dashboard
+            </h1>
+            <p class="text-gray-600 text-sm">
+              Comparing <strong>{{ today_label }}</strong> vs
+              <strong>{{ yesterday_label }}</strong>
+            </p>
+          </div>
+          <img
+            src="{{ user.picture }}"
+            alt="User"
+            class="w-10 h-10 rounded-full border object-cover hidden md:block"
+          />
+        </div>
+
+        <!-- Tabs -->
+        <div class="mt-4 flex gap-6 border-b pb-2 overflow-x-auto">
+          {% for tab in ['Daily', 'Monthly', 'Total'] %}
+          <button
+            onclick="showTab('{{ tab }}')"
+            class="tab-btn {% if tab == 'Daily' %}text-green-600 font-semibold border-b-2 border-green-600{% else %}text-gray-600 hover:text-green-700{% endif %} pb-1 transition duration-300 whitespace-nowrap"
+          >
+            {{ tab }}
+          </button>
+          {% endfor %}
+        </div>
+      </header>
+
+      <!-- Tab Content -->
+      <div class="flex-1 overflow-y-auto p-4">
+        {% for tab in ['Daily', 'Monthly', 'Total'] %}
+        <section
+          id="{{ tab }}-tab"
+          class="tab-content {% if tab != 'Daily' %}hidden{% endif %} grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 transition-all duration-300 ease-in-out"
+        >
+          {% set tab_data = grouped_summary[tab] %} {% for category, items in
+          tab_data %} {% set span_class = 'md:col-span-2' if category|lower ==
+          'engagements' or items|length >= 2 else '' %}
+          <div
+            class="bg-white shadow rounded-2xl p-5 {{ span_class }} transition-all duration-300 ease-in-out"
+          >
+            <h3
+              class="text-lg font-semibold text-gray-700 mb-4 border-b pb-2 flex items-center gap-2"
+            >
+              <i data-lucide="calendar" class="w-4 h-4 text-green-500"></i>
+              {{ category }}
+            </h3>
+
+            <div class="flex flex-wrap gap-4">
+              {% set item_count = items | length %} {% for item in items %} {%
+              set is_growth = item.delta | float >= 0 %}
+              <div
+                class="{% if item_count >= 2 %}w-full md:w-[calc(50%-0.5rem)]{% else %}w-full{% endif %} bg-white border border-gray-200 shadow-sm hover:shadow-md transition-all duration-300 transform hover:-translate-y-1 rounded-xl p-4 flex flex-col gap-2"
+              >
+                <div class="text-sm font-medium text-gray-600">
+                  {{ item.metric }}
+                </div>
+
+                <div class="text-2xl font-extrabold text-green-700">
+                  {{ '{:,}'.format(item.today | int) }}
+                </div>
+
+                <div class="text-xs text-gray-500">
+                  Yesterday:
+                  <span class="font-semibold"
+                    >{{ '{:,}'.format(item.yesterday | int) }}</span
+                  >
+                </div>
+
+                <div
+                  class="mt-1 flex items-center gap-1 text-sm font-semibold {% if is_growth %}text-green-600{% else %}text-red-600{% endif %}"
+                >
+                  <i
+                    data-lucide="{% if is_growth %}arrow-up{% else %}arrow-down{% endif %}"
+                    class="w-4 h-4"
+                  ></i>
+                  {{ item.delta }}
+                  <span class="text-gray-500 font-normal text-xs"
+                    >({{ item.change }})</span
+                  >
+                </div>
+              </div>
+              {% endfor %}
+            </div>
+
+            
+          </div>
+          {% endfor %}
+        </section>
+        {% endfor %}
+      </div>
+      <div class="p-10 flex md:hidden"></div>
+    </main>
+  </div>
+
+  <!-- JS -->
+  <script>
+    const buttons = document.querySelectorAll(".tab-btn");
+    const tabContents = document.querySelectorAll(".tab-content");
+    const sidebar = document.getElementById("sidebar");
+    const sidebarBackdrop = document.getElementById("sidebar-backdrop");
+
+    function showTab(tab) {
+      buttons.forEach((btn) => {
+        btn.classList.remove(
+          "text-green-600",
+          "font-semibold",
+          "border-b-2",
+          "border-green-600"
+        );
+        if (btn.textContent.trim() === tab) {
+          btn.classList.add(
+            "text-green-600",
+            "font-semibold",
+            "border-b-2",
+            "border-green-600"
+          );
+        }
+      });
+
+      tabContents.forEach((el) => el.classList.add("hidden"));
+      const activeTab = document.getElementById(`${tab}-tab`);
+      if (activeTab) activeTab.classList.remove("hidden");
+    }
+
+    function toggleSidebar() {
+      sidebar.classList.toggle("-translate-x-full");
+      sidebarBackdrop.classList.toggle("hidden");
+    }
+
+    function closeSidebar() {
+      sidebar.classList.add("-translate-x-full");
+      sidebarBackdrop.classList.add("hidden");
+    }
+
+    function logout() {
+      fetch("/auth/logout", {
+        method: "GET",
+        credentials: "include",
+      }).then(() => {
+        localStorage.removeItem("google_id_token");
+        window.location.href = "/";
+      });
+    }
+
+    document.addEventListener("DOMContentLoaded", () => {
+      showTab("Daily");
+      if (window.lucide) window.lucide.createIcons();
+    });
+  </script>
+</div>
+{% endblock %}

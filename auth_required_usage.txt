@@ -1,0 +1,72 @@
+📌 PURPOSE
+----------
+The `auth_required` dependency is used to protect routes in FastAPI that require the user to be authenticated.
+Instead of checking the cookie and user session manually in every route, you can use this dependency to handle it automatically.
+
+🛠️ LOCATION
+------------
+File: app/dependencies/auth.py
+
+Function:
+    def auth_required(request: Request):
+        user = get_current_user(request)
+        if not user:
+            raise HTTPException(status_code=401, detail="Unauthorized")
+        return user
+
+💡 USAGE
+---------
+In any route that requires the user to be logged in, use the `Depends(auth_required)` method to enforce authentication.
+
+Example usage in a route:
+
+    from fastapi import Depends
+    from app.dependencies.auth import auth_required
+
+    @router.get("/dashboard", response_class=HTMLResponse)
+    def dashboard(request: Request, user=Depends(auth_required)):
+        return templates.TemplateResponse("dashboard/dashboard.html", {"request": request, "user": user})
+
+This ensures that:
+✔ The user must be authenticated
+✔ The session cookie is automatically validated
+✔ The `user` object is available in your route
+
+🔁 ALTERNATIVE: REDIRECT INSTEAD OF ERROR
+----------------------------------------
+If you want to redirect to "/" when the user is not authenticated instead of returning 401:
+
+    from fastapi.responses import RedirectResponse
+
+    def auth_required(request: Request):
+        user = get_current_user(request)
+        if not user:
+            return RedirectResponse("/")
+        return user
+
+Use this only for routes returning HTML. For APIs, it's better to raise `HTTPException(401)`.
+
+✅ BENEFITS
+-----------
+- Cleaner route logic
+- Reusable authentication logic
+- Centralized session validation
+- Consistent behavior across routes
+
+🧩 WHERE TO USE IT
+--------------------
+Use `Depends(auth_required)` on any route where:
+- Only logged-in users are allowed
+- You need the authenticated user's info from the session
+Examples:
+    - /dashboard
+    - /settings
+    - /account
+    - /analytics
+    - /admin
+
+Avoid using it on:
+    - / (login page)
+    - /auth/* routes
+    - public pages (e.g., homepage, landing page)
+

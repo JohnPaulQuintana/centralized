@@ -1,0 +1,30 @@
+<!-- app/templates/auth.html -->
+{% extends "base.html" %}
+
+{% block title %}Login{% endblock %}
+
+{% block head_extra %}
+  <script src="/static/js/auth.js"></script>
+{% endblock %}
+
+{% block content %}
+<div class="flex items-center justify-center h-screen">
+  <div class="text-center">
+    <h1 class="text-2xl font-bold mb-4">Login with Google</h1>
+
+    <div id="g_id_onload"
+         data-client_id="266581007685-pd687uda2mlgdgccdbbnsedk2lu6ssb4.apps.googleusercontent.com"
+         data-callback="handleCredentialResponse"
+         data-context="signin"
+         data-auto_prompt="false"></div>
+
+    <div class="g_id_signin"
+         data-type="standard"
+         data-size="large"
+         data-theme="outline"
+         data-text="sign_in_with"
+         data-shape="rectangular"
+         data-logo_alignment="left"></div>
+  </div>
+</div>
+{% endblock %}
