@@ -91,7 +91,7 @@ block content %}
               class="text-xl md:text-2xl font-bold text-green-700 flex items-center gap-2"
             >
               <i data-lucide="pie-chart" class="w-6 h-6 text-green-500"></i>
-              Analytics Dashboard
+              Trend Analytics Dashboard
             </h1>
             <p class="text-gray-600 text-sm">
               <!-- Comparing <strong>{{ today_label }}</strong> vs -->
@@ -430,60 +430,69 @@ block content %}
               rounded-xl p-4 flex flex-col md:flex-row justify-between items-center gap-4">
 
               <!-- Metric Display -->
-              <div class="w-fit">
-                <div class="text-sm font-medium text-gray-600">
-                  ${item.metric}
+              <div class="w-full md:w-fit flex flex-row md:flex-col items-center justify-between space-y-1.5">
+                <div>
+                  <!-- Metric Label -->
+                  <div class="text-sm font-medium text-gray-500 uppercase tracking-wide">
+                    ${item.metric}
+                  </div>
+
+                  <!-- Today's Value -->
+                  <div class="text-2xl font-extrabold ${isGrowth ? 'text-green-700' : 'text-red-600'}">
+                    ${Number(item.today).toLocaleString()}
+                  </div>
                 </div>
-                <div class="text-2xl font-extrabold text-green-700">
-                  ${Number(item.today).toLocaleString()}
-                </div>
-                <div class="text-xs text-gray-500">
-                  Yesterday: <span class="font-semibold">
-                    ${Number(item.yesterday).toLocaleString()}
-                  </span>
-                </div>
-                <div class="mt-1 flex items-center gap-1 text-sm font-semibold 
-                  ${isGrowth ? "text-green-600" : "text-red-600"}">
-                  <i data-lucide="${
-                    isGrowth ? "arrow-up" : "arrow-down"
-                  }" class="w-4 h-4"></i>
-                  ${Number(item.delta).toLocaleString()}
-                  <span class="text-gray-500 font-normal text-xs">(${
-                    item.change
-                  })</span>
+
+                <!-- Yesterday's Value -->
+                <div class="shadow p-2">
+                    <div class="text-xs text-gray-500">
+                      Yesterday: 
+                      <span class="font-bold ${isGrowth ? 'text-red-600' : 'text-green-600'}">
+                        ${Number(item.yesterday).toLocaleString()}
+                      </span>
+                    </div>
+
+                    <!-- Delta / Change -->
+                    <div class="flex items-center gap-1 text-sm font-semibold 
+                                ${isGrowth ? 'text-green-600' : 'text-red-600'}">
+                      <i data-lucide="${isGrowth ? 'arrow-up-right' : 'arrow-down-right'}" class="w-4 h-4"></i>
+                      ${Number(item.delta).toLocaleString()}
+                      <span class="text-xs font-normal text-gray-500">(${item.change})</span>
+                    </div>
                 </div>
               </div>
 
-              <!-- Chart with Scrollable X Axis -->
-            <div class="rounded-xl bg-white shadow p-2 mt-2 w-full max-w-full overflow-hidden">
-  <span class="font-bold text-gray-500">Recent 31-Day Metrics (Newest First)</span>
 
-  <!-- Chart Scroll Wrapper -->
-  <div class="w-full overflow-x-auto">
-    <!-- Scrollable Area -->
-    <div class="inline-block min-w-[850px] h-[180px]">
-      <canvas
-        data-chart-id="chart-${tab}-${category}-${i}"
-        data-chart-labels='${JSON.stringify(
-          item.chart.labels.map((label) => {
-            const parts = label.split("/");
-            if (parts.length === 3) {
-              const [day, month, year] = parts.map(Number);
-              const date = new Date(year, month - 1, day);
-              return date.toLocaleDateString("en-US", {
-                month: "short",
-                day: "numeric",
-              });
-            }
-            return label;
-          })
-        )}'
-        data-chart-values='${JSON.stringify(item.chart.values)}'
-        class="chart w-full h-full">
-      </canvas>
-    </div>
-  </div>
-</div>
+              <!-- Chart with Scrollable X Axis -->
+              <div class="rounded-xl bg-white shadow p-2 mt-2 w-full max-w-full overflow-hidden">
+                  <span class="font-bold text-gray-500">Recent 31-Day Metrics (Newest First)</span>
+
+                  <!-- Chart Scroll Wrapper -->
+                  <div class="w-full overflow-x-auto">
+                    <!-- Scrollable Area -->
+                    <div class="inline-block min-w-[850px] h-[180px]">
+                      <canvas
+                        data-chart-id="chart-${tab}-${category}-${i}"
+                        data-chart-labels='${JSON.stringify(
+                          item.chart.labels.map((label) => {
+                            const parts = label.split("/");
+                            if (parts.length === 3) {
+                              const [day, month, year] = parts.map(Number);
+                              const date = new Date(year, month - 1, day);
+                              return date.toLocaleDateString("en-US", {
+                                month: "short",
+                                day: "numeric",
+                              });
+                            }
+                            return label;
+                          })
+                        )}'
+                        data-chart-values='${JSON.stringify(item.chart.values)}'
+                        class="chart w-full h-full">
+                      </canvas>
+                    </div>
+                  </div>
+                </div>
 
 
             </div>
