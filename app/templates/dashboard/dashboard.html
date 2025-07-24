@@ -248,74 +248,74 @@ block content %}
 
   // init chart
   function initAllCharts() {
-    setTimeout(() => {
-      document.querySelectorAll("canvas.chart").forEach((canvas) => {
-        const ctx = canvas.getContext("2d");
+  setTimeout(() => {
+    document.querySelectorAll("canvas.chart").forEach((canvas) => {
+      const ctx = canvas.getContext("2d");
 
-        const labels = JSON.parse(canvas.dataset.chartLabels || "[]");
-        const values = JSON.parse(canvas.dataset.chartValues || "[]");
+      const labels = JSON.parse(canvas.dataset.chartLabels || "[]");
+      const values = JSON.parse(canvas.dataset.chartValues || "[]");
 
-        // Destroy any existing chart instance first (if re-rendering)
-        if (canvas._chartInstance) {
-          canvas._chartInstance.destroy();
-        }
+      // Destroy any existing chart instance first (if re-rendering)
+      if (canvas._chartInstance) {
+        canvas._chartInstance.destroy();
+      }
 
-        const chart = new Chart(ctx, {
-          type: "line",
-          data: {
-            labels,
-            datasets: [
-              {
-                label: "History",
-                data: values,
-                borderColor: "#16a34a",
-                backgroundColor: "rgba(22,163,74,0.1)",
-                borderWidth: 2,
-                fill: true,
-                tension: 0.3,
-                pointRadius: 2,
-              },
-            ],
-          },
-          options: {
-            responsive: true,
-            maintainAspectRatio: false,
-            animation: {
-              duration: 0, // optional: prevents slow load
+      const chart = new Chart(ctx, {
+        type: "line",
+        data: {
+          labels,
+          datasets: [
+            {
+              label: "History",
+              data: values,
+              borderColor: "#16a34a",
+              backgroundColor: "rgba(22,163,74,0.1)",
+              borderWidth: 2,
+              fill: true,
+              tension: 0.3,
+              pointRadius: 3,
+              pointHoverRadius: 6,  // highlight on hover
+              pointHitRadius: 12,   // larger clickable area
             },
-            plugins: {
-              //title: {
-              //  display: true,
-              //  text: "7-Day Insights",
-              //  font: {
-              //    size: 14,
-              //    weight: "bold",
-              //  },
-              //  padding: {
-              //    top: 10,
-              //    bottom: 20,
-              //  },
-              //  color: "#16a34a", // Tailwind gray-800
-              // },
-              legend: { display: false },
-            },
-            scales: {
-              x: {
-                ticks: { font: { size: 10 } },
-                autoSkip: false,
-              },
-              y: {
-                beginAtZero: true,
-                ticks: { font: { size: 10 } },
-              },
-            },
-          },
-        });
+          ],
+        },
+        options: {
+  responsive: true,
+  maintainAspectRatio: false,
+  animation: { duration: 0 },
+  interaction: {
+    mode: 'index',
+    intersect: false,
+  },
+  elements: {
+    point: {
+      radius: 3,
+      hitRadius: 20,
+      hoverRadius: 7,
+    }
+  },
+  plugins: {
+    legend: { display: false },
+  },
+  scales: {
+    x: {
+      ticks: { font: { size: 10 } },
+      autoSkip: false,
+    },
+    y: {
+      beginAtZero: true,
+      ticks: { font: { size: 10 } },
+    },
+  },
+}
 
-        canvas._chartInstance = chart;
       });
-    }, 150); // Delay allows DOM layout to settle
-  }
+
+      canvas._chartInstance = chart;
+    });
+  }, 150);
+}
+
 
   function updateDashboard(data) {
     const tabContentParent = document.querySelector("#d-tab-content");
