@@ -1,9 +1,8 @@
 from app.services import sheets_api
-
+sheet_url = f"https://docs.google.com/spreadsheets/d/{sheets_api.SPREADSHEET_ID}"
 def find_data_by_keyword(sheet_name: str, keyword: str, column="A", num_rows=17, num_columns=31):
     full_range = f"{sheet_name}!{column}1:{column}"
     data = sheets_api.read_sheet(full_range)
-
     start_row = None
     for i, row in enumerate(data):
         if row and row[0].strip() == keyword:
@@ -60,6 +59,7 @@ def summarize_metrics_with_chart_data(sheet_data):
             values = [parse_number(v) for v in row[3:31]]
 
             parsed.append({
+                "sheet_url": sheet_url,
                 "metric": metric,
                 "category": metric_category_map.get(metric, "Other"),
                 "today": today,

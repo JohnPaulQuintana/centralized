@@ -8,11 +8,14 @@ block content %}
     <button onclick="toggleSidebar()" class="text-green-700">
       <i data-lucide="menu" class="w-6 h-6"></i>
     </button>
-    <img
-      src="{{ user.picture }}"
-      alt="User"
-      class="w-9 h-9 rounded-full border object-cover"
-    />
+    <div class="flex items-center gap-2">
+      <a class="sheet border rounded-md p-2 text-green-700 pointer-cursor" href="/" target="_blank" rel="noopener noreferrer">Spreadsheet</a>
+      <img
+        src="{{ user.picture }}"
+        alt="User"
+        class="w-9 h-9 rounded-full border object-cover"
+      />
+    </div>
   </div>
 
   <!-- Sidebar Overlay (Mobile only) -->
@@ -96,14 +99,20 @@ block content %}
             <p class="text-gray-600 text-sm">
               <!-- Comparing <strong>{{ today_label }}</strong> vs -->
               Today's Trends & 31-Day Performance
-              <span class="block">DATE: <strong>{{ today_label }}</strong></span>
+              <span class="block"
+                >DATE: <strong>{{ today_label }}</strong></span
+              >
             </p>
           </div>
-          <img
-            src="{{ user.picture }}"
-            alt="User"
-            class="w-10 h-10 rounded-full border object-cover hidden md:block"
-          />
+
+          <div class="flex items-center gap-2">
+            <a class="hidden md:flex sheet border rounded-md p-2 text-green-700 pointer-cursor hover:bg-gray-100" href="/" target="_blank" rel="noopener noreferrer">Spreadsheet</a>
+            <img
+              src="{{ user.picture }}"
+              alt="User"
+              class="w-10 h-10 rounded-full border object-cover hidden md:block"
+            />
+          </div>
         </div>
 
         <!-- Tabs -->
@@ -120,9 +129,7 @@ block content %}
       </header>
 
       <!-- Tab Content -->
-      <div id="d-tab-content" class="flex-1 overflow-y-auto p-2 md:p-4">
-        
-      </div>
+      <div id="d-tab-content" class="flex-1 overflow-y-auto p-2 md:p-4"></div>
       <div class="p-10 flex md:hidden"></div>
     </main>
   </div>
@@ -248,74 +255,72 @@ block content %}
 
   // init chart
   function initAllCharts() {
-  setTimeout(() => {
-    document.querySelectorAll("canvas.chart").forEach((canvas) => {
-      const ctx = canvas.getContext("2d");
+    setTimeout(() => {
+      document.querySelectorAll("canvas.chart").forEach((canvas) => {
+        const ctx = canvas.getContext("2d");
 
-      const labels = JSON.parse(canvas.dataset.chartLabels || "[]");
-      const values = JSON.parse(canvas.dataset.chartValues || "[]");
+        const labels = JSON.parse(canvas.dataset.chartLabels || "[]");
+        const values = JSON.parse(canvas.dataset.chartValues || "[]");
 
-      // Destroy any existing chart instance first (if re-rendering)
-      if (canvas._chartInstance) {
-        canvas._chartInstance.destroy();
-      }
+        // Destroy any existing chart instance first (if re-rendering)
+        if (canvas._chartInstance) {
+          canvas._chartInstance.destroy();
+        }
 
-      const chart = new Chart(ctx, {
-        type: "line",
-        data: {
-          labels,
-          datasets: [
-            {
-              label: "History",
-              data: values,
-              borderColor: "#16a34a",
-              backgroundColor: "rgba(22,163,74,0.1)",
-              borderWidth: 2,
-              fill: true,
-              tension: 0.3,
-              pointRadius: 3,
-              pointHoverRadius: 6,  // highlight on hover
-              pointHitRadius: 12,   // larger clickable area
+        const chart = new Chart(ctx, {
+          type: "line",
+          data: {
+            labels,
+            datasets: [
+              {
+                label: "History",
+                data: values,
+                borderColor: "#16a34a",
+                backgroundColor: "rgba(22,163,74,0.1)",
+                borderWidth: 2,
+                fill: true,
+                tension: 0.3,
+                pointRadius: 3,
+                pointHoverRadius: 6, // highlight on hover
+                pointHitRadius: 12, // larger clickable area
+              },
+            ],
+          },
+          options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            animation: { duration: 0 },
+            interaction: {
+              mode: "index",
+              intersect: false,
             },
-          ],
-        },
-        options: {
-  responsive: true,
-  maintainAspectRatio: false,
-  animation: { duration: 0 },
-  interaction: {
-    mode: 'index',
-    intersect: false,
-  },
-  elements: {
-    point: {
-      radius: 3,
-      hitRadius: 20,
-      hoverRadius: 7,
-    }
-  },
-  plugins: {
-    legend: { display: false },
-  },
-  scales: {
-    x: {
-      ticks: { font: { size: 10 } },
-      autoSkip: false,
-    },
-    y: {
-      beginAtZero: true,
-      ticks: { font: { size: 10 } },
-    },
-  },
-}
+            elements: {
+              point: {
+                radius: 3,
+                hitRadius: 20,
+                hoverRadius: 7,
+              },
+            },
+            plugins: {
+              legend: { display: false },
+            },
+            scales: {
+              x: {
+                ticks: { font: { size: 10 } },
+                autoSkip: false,
+              },
+              y: {
+                beginAtZero: true,
+                ticks: { font: { size: 10 } },
+              },
+            },
+          },
+        });
 
+        canvas._chartInstance = chart;
       });
-
-      canvas._chartInstance = chart;
-    });
-  }, 150);
-}
-
+    }, 150);
+  }
 
   function updateDashboard(data) {
     const tabContentParent = document.querySelector("#d-tab-content");
@@ -348,6 +353,10 @@ block content %}
       `;
 
         items.forEach((item, i) => {
+          document.querySelectorAll(".sheet").forEach(el => {
+            el.href = item.sheet_url;
+          });
+
           const isGrowth = parseFloat(item.delta) >= 0;
           const isTwoItems = items.length === 2;
 
@@ -367,7 +376,9 @@ block content %}
                   </div>
 
                   <!-- Today's Value -->
-                  <div class="text-2xl font-extrabold ${isGrowth ? 'text-green-700' : 'text-red-600'}">
+                  <div class="text-2xl font-extrabold ${
+                    isGrowth ? "text-green-700" : "text-red-600"
+                  }">
                     ${Number(item.today).toLocaleString()}
                   </div>
                 </div>
@@ -376,17 +387,25 @@ block content %}
                 <div class="shadow p-2">
                     <div class="text-xs text-gray-500">
                       Yesterday: 
-                      <span class="font-bold ${isGrowth ? 'text-red-600' : 'text-green-600'}">
+                      <span class="font-bold ${
+                        isGrowth ? "text-red-600" : "text-green-600"
+                      }">
                         ${Number(item.yesterday).toLocaleString()}
                       </span>
                     </div>
 
                     <!-- Delta / Change -->
                     <div class="flex items-center gap-1 text-sm font-semibold 
-                                ${isGrowth ? 'text-green-600' : 'text-red-600'}">
-                      <i data-lucide="${isGrowth ? 'arrow-up-right' : 'arrow-down-right'}" class="w-4 h-4"></i>
+                                ${
+                                  isGrowth ? "text-green-600" : "text-red-600"
+                                }">
+                      <i data-lucide="${
+                        isGrowth ? "arrow-up-right" : "arrow-down-right"
+                      }" class="w-4 h-4"></i>
                       ${Number(item.delta).toLocaleString()}
-                      <span class="text-xs font-normal text-gray-500">(${item.change})</span>
+                      <span class="text-xs font-normal text-gray-500">(${
+                        item.change
+                      })</span>
                     </div>
                 </div>
               </div>
