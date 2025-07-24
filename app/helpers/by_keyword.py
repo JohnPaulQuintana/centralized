@@ -1,6 +1,6 @@
 from app.services import sheets_api
 
-def find_data_by_keyword(sheet_name: str, keyword: str, column="A", num_rows=17, num_columns=26):
+def find_data_by_keyword(sheet_name: str, keyword: str, column="A", num_rows=17, num_columns=31):
     full_range = f"{sheet_name}!{column}1:{column}"
     data = sheets_api.read_sheet(full_range)
 
@@ -14,7 +14,7 @@ def find_data_by_keyword(sheet_name: str, keyword: str, column="A", num_rows=17,
         raise ValueError(f"Keyword '{keyword}' not found or no row above it.")
 
     end_row = start_row + num_rows
-    col_letters = ["A", "B", "C", "D", "E", "F", "G", "H", "I", "J", "K", "L", "M", "N", "O", "P", "Q", "R","S","T","U","V","W","X","Y","Z"][:num_columns]
+    col_letters = ["A", "B", "C", "D", "E", "F", "G", "H", "I", "J", "K", "L", "M", "N", "O", "P", "Q", "R","S","T","U","V","W","X","Y","Z","AA","AB","AC","AD","AE"][:num_columns]
     range_ = f"{sheet_name}!{col_letters[0]}{start_row+1}:{col_letters[-1]}{end_row}"
     return sheets_api.read_sheet(range_)
 
@@ -48,16 +48,16 @@ def summarize_metrics_with_chart_data(sheet_data):
         return [], "", "", []
 
     date_row = sheet_data[0]
-    date_labels = [str(d).strip() for d in date_row[3:26]]
+    date_labels = [str(d).strip() for d in date_row[3:31]]
 
     parsed = []
     for row in sheet_data[1:]:
-        if len(row) >= 26:
+        if len(row) >= 31:
             metric = str(row[1]).strip().upper()
             today = parse_number(row[3])
             yesterday = parse_number(row[4])
             delta = today - yesterday
-            values = [parse_number(v) for v in row[3:26]]
+            values = [parse_number(v) for v in row[3:31]]
 
             parsed.append({
                 "metric": metric,
