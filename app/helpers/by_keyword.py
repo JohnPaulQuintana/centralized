@@ -1,6 +1,6 @@
 from app.services import sheets_api
 
-def find_data_by_keyword(sheet_name: str, keyword: str, column="A", num_rows=17, num_columns=5):
+def find_data_by_keyword(sheet_name: str, keyword: str, column="A", num_rows=17, num_columns=10):
     full_range = f"{sheet_name}!{column}1:{column}"
     data = sheets_api.read_sheet(full_range)
 
@@ -14,9 +14,8 @@ def find_data_by_keyword(sheet_name: str, keyword: str, column="A", num_rows=17,
         raise ValueError(f"Keyword '{keyword}' not found or no row above it.")
 
     end_row = start_row + num_rows
-    col_letters = ["A", "B", "C", "D", "E"][:num_columns]
+    col_letters = ["A", "B", "C", "D", "E", "F", "G", "H", "I", "J"][:num_columns]
     range_ = f"{sheet_name}!{col_letters[0]}{start_row+1}:{col_letters[-1]}{end_row}"
-    
     return sheets_api.read_sheet(range_)
 
 def parse_number(value: str):
@@ -25,8 +24,7 @@ def parse_number(value: str):
     except (ValueError, TypeError):
         return 0
 
-
-def summarize_today_vs_yesterday(sheet_data):
+def summarize_metrics_with_chart_data(sheet_data):
     metric_category_map = {
         "TOTAL FOLLOWERS": "Followers",
         "DAILY FOLLOWERS GAIN": "Followers",
@@ -46,18 +44,21 @@ def summarize_today_vs_yesterday(sheet_data):
         "TOTAL VIEWS": "Views"
     }
 
-    # Extract date row (assumes first row is header and 3rd/4th index are the dates)
-    date_row = sheet_data[0]  # Row above metrics
-    today_label = date_row[3] if len(date_row) > 3 else "Today"
-    yesterday_label = date_row[4] if len(date_row) > 4 else "Yesterday"
+    if not sheet_data or len(sheet_data) < 2:
+        return [], "", "", []
+
+    date_row = sheet_data[0]
+    date_labels = [str(d).strip() for d in date_row[3:10]]
 
     parsed = []
     for row in sheet_data[1:]:
-        if len(row) >= 5:
-            metric = row[1].strip().upper()
+        if len(row) >= 10:
+            metric = str(row[1]).strip().upper()
             today = parse_number(row[3])
             yesterday = parse_number(row[4])
             delta = today - yesterday
+            values = [parse_number(v) for v in row[3:10]]
+
             parsed.append({
                 "metric": metric,
                 "category": metric_category_map.get(metric, "Other"),
@@ -69,7 +70,11 @@ def summarize_today_vs_yesterday(sheet_data):
                     "decrease" if delta < 0 else
                     "no change"
                 ),
+                "chart": {
+                    "labels": date_labels,
+                    "values": values
+                }
             })
+    assert isinstance(date_labels, list), f"date_labels is not a list: {type(date_labels)}"
 
-    return parsed, today_label, yesterday_label
-
+    return parsed, date_labels[0] if len(date_labels) > 0 else "", date_labels[1] if len(date_labels) > 1 else "", date_labels

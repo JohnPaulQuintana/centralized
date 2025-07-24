@@ -5,11 +5,11 @@
     <meta charset="UTF-8" />
     <title>{% block title %}My App{% endblock %}</title>
     <meta name="viewport" content="width=device-width, initial-scale=1" />
-    
 
     <!-- Tailwind -->
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://unpkg.com/lucide@latest/dist/umd/lucide.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 
     <!-- Google Sign-In -->
     <script src="https://accounts.google.com/gsi/client" async defer></script>
@@ -20,8 +20,13 @@
       html {
         scroll-behavior: smooth;
       }
+      .loader {
+        border-top-color: #16a34a;
+        border-left-color: transparent;
+        border-right-color: transparent;
+        border-bottom-color: transparent;
+      }
     </style>
-
   </head>
   <body class="bg-gray-50 text-gray-900 h-full">
     <!-- Loader Overlay -->

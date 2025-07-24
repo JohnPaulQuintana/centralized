@@ -31,13 +31,44 @@ block content %}
       <div
         class="text-2xl font-extrabold text-green-600 flex items-center gap-2"
       >
-        <i data-lucide="bar-chart-3" class="w-6 h-6"></i> Tracker
+        <i data-lucide="bar-chart-3" class="w-6 h-6"></i> Centralized
       </div>
 
       <div>
         <p class="text-gray-600 text-sm">Logged in as</p>
         <div class="font-semibold">{{ user.name }}</div>
         <div class="text-sm text-gray-500">{{ user.email }}</div>
+      </div>
+
+      <!-- Facebook Selection -->
+      <div class="mt-6">
+        <h2
+          class="text-sm font-semibold text-gray-600 mb-2 flex items-center gap-2"
+        >
+          <i data-lucide="facebook" class="w-4 h-4 text-blue-600"></i>
+          Facebook Selection
+        </h2>
+
+        <!-- Brand Dropdown -->
+        <label class="block text-xs text-gray-500 mb-1">Brand</label>
+        <select
+          id="brand-select"
+          class="w-full border rounded px-2 py-1 text-sm focus:outline-none focus:ring focus:border-green-500"
+        >
+          <option value="BAJI">BAJI</option>
+          <option value="SIX6S">SIX6S</option>
+          <option value="JEETBUZZ">JEETBUZZ</option>
+          <option value="BADSHA">BADSHA</option>
+        </select>
+
+        <!-- Currency Dropdown -->
+        <label class="block text-xs text-gray-500 mt-3 mb-1">Currency</label>
+        <select
+          id="currency-select"
+          class="w-full border rounded px-2 py-1 text-sm focus:outline-none focus:ring focus:border-green-500"
+        >
+          <option value="">Select a currency</option>
+        </select>
       </div>
 
       <button
@@ -87,19 +118,22 @@ block content %}
         </div>
       </header>
 
+      <!-- Dynamic Tab -->
+      <!-- <div
+        id="d-tab-content"
+        class="flex-1 overflow-y-auto p-4 border border-red-500"
+      ></div> -->
       <!-- Tab Content -->
-      <div class="flex-1 overflow-y-auto p-4">
-        {% for tab in ['Daily', 'Monthly', 'Total'] %}
+      <div id="d-tab-content" class="flex-1 overflow-y-auto p-4">
+        <!-- {% for tab in ['Daily', 'Monthly', 'Total'] %}
         <section
           id="{{ tab }}-tab"
-          class="tab-content {% if tab != 'Daily' %}hidden{% endif %} grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 transition-all duration-300 ease-in-out"
+          class="tab-content {% if tab != 'Daily' %}hidden{% endif %} grid grid-cols-1 md:grid-cols-2 gap-4 transition-all duration-300 ease-in-out"
         >
           {% set tab_data = grouped_summary[tab] %} {% for category, items in
-          tab_data %} {% set span_class = 'md:col-span-2' if category|lower ==
-          'engagements' or items|length >= 2 else '' %}
-          <div
-            class="bg-white shadow rounded-2xl p-5 {{ span_class }} transition-all duration-300 ease-in-out"
-          >
+          tab_data %} {% set span_class = 'col-span-1 md:col-span-2' if
+          category|lower == 'engagements' or items|length >= 2 else '' %}
+          <div class="bg-white shadow rounded-2xl p-5 {{ span_class }}">
             <h3
               class="text-lg font-semibold text-gray-700 mb-4 border-b pb-2 flex items-center gap-2"
             >
@@ -108,106 +142,373 @@ block content %}
             </h3>
 
             <div class="flex flex-wrap gap-4">
-              {% set item_count = items | length %} {% for item in items %} {%
-              set is_growth = item.delta | float >= 0 %}
+              {% for item in items %} {% set is_two_items = items|length == 2
+              %}{% set is_growth = item.delta | float >= 0 %}
               <div
-                class="{% if item_count >= 2 %}w-full md:w-[calc(50%-0.5rem)]{% else %}w-full{% endif %} bg-white border border-gray-200 shadow-sm hover:shadow-md transition-all duration-300 transform hover:-translate-y-1 rounded-xl p-4 flex flex-col gap-2"
+                class="flex-1 min-w-[300px] max-w-full {% if is_two_items %} md:basis-[calc(50%-0.5rem)] {% else %} md:basis-full {% endif %} bg-white border border-gray-200 shadow-sm hover:shadow-md transition-all duration-300 transform hover:-translate-y-1 rounded-xl p-4 flex flex-col md:flex-row justify-between items-center gap-4"
               >
-                <div class="text-sm font-medium text-gray-600">
-                  {{ item.metric }}
-                </div>
-
-                <div class="text-2xl font-extrabold text-green-700">
-                  {{ '{:,}'.format(item.today | int) }}
-                </div>
-
-                <div class="text-xs text-gray-500">
-                  Yesterday:
-                  <span class="font-semibold"
-                    >{{ '{:,}'.format(item.yesterday | int) }}</span
+              
+                <div class="w-fit">
+                  <div class="text-sm font-medium text-gray-600">
+                    {{ item.metric }}
+                  </div>
+                  <div class="text-2xl font-extrabold text-green-700">
+                    {{ '{:,}'.format(item.today | int) }}
+                  </div>
+                  <div class="text-xs text-gray-500">
+                    Yesterday:
+                    <span class="font-semibold"
+                      >{{ '{:,}'.format(item.yesterday | int) }}</span
+                    >
+                  </div>
+                  <div
+                    class="mt-1 flex items-center gap-1 text-sm font-semibold {% if is_growth %}text-green-600{% else %}text-red-600{% endif %}"
                   >
+                    <i
+                      data-lucide="{% if is_growth %}arrow-up{% else %}arrow-down{% endif %}"
+                      class="w-4 h-4"
+                    ></i>
+                    {{ '{:,}'.format(item.delta | int) }}
+                    <span class="text-gray-500 font-normal text-xs"
+                      >({{ item.change }})</span
+                    >
+                  </div>
                 </div>
 
                 <div
-                  class="mt-1 flex items-center gap-1 text-sm font-semibold {% if is_growth %}text-green-600{% else %}text-red-600{% endif %}"
+                  class="rounded-xl bg-white shadow p-2 mt-2 w-full h-[200px]"
                 >
-                  <i
-                    data-lucide="{% if is_growth %}arrow-up{% else %}arrow-down{% endif %}"
-                    class="w-4 h-4"
-                  ></i>
-                  {{ item.delta }}
-                  <span class="text-gray-500 font-normal text-xs"
-                    >({{ item.change }})</span
-                  >
+                  <canvas
+                    data-chart-id="chart-{{ loop.index0 }}"
+                    data-chart-labels='{{ item.chart["labels"] | map("string") | map("replace", "/.*", "") | list | tojson }}'
+                    data-chart-values='{{ item.chart["values"] | tojson }}'
+                    class="chart w-full"
+                  ></canvas>
                 </div>
               </div>
               {% endfor %}
             </div>
-
-            
           </div>
           {% endfor %}
         </section>
-        {% endfor %}
+        {% endfor %} -->
       </div>
       <div class="p-10 flex md:hidden"></div>
     </main>
   </div>
+</div>
 
-  <!-- JS -->
-  <script>
+<!-- Loader -->
+<div id="dashboard-loader" class="hidden absolute inset-0 bg-white bg-opacity-70 z-50 flex items-center justify-center">
+  <div class="loader ease-linear rounded-full border-8 border-t-8 border-green-500 h-12 w-12 animate-spin"></div>
+</div>
+
+<!-- JS -->
+<script>
+  const buttons = document.querySelectorAll(".tab-btn");
+  const tabContents = document.querySelectorAll(".tab-content");
+  const sidebar = document.getElementById("sidebar");
+  const sidebarBackdrop = document.getElementById("sidebar-backdrop");
+
+  const brandSelect = document.getElementById("brand-select");
+  const currencySelect = document.getElementById("currency-select");
+
+  const brandToCurrency = {
+    BAJI: ["BDT", "PKR", "NPR", "INR"],
+    SIX6S: ["BDT", "PKR", "INR"],
+    JEETBUZZ: ["BDT", "PKR", "INR", "BDT-NEW", "INR-NEW"],
+    BADSHA: ["BDT"],
+  };
+
+  function showTab(tab) {
     const buttons = document.querySelectorAll(".tab-btn");
     const tabContents = document.querySelectorAll(".tab-content");
-    const sidebar = document.getElementById("sidebar");
-    const sidebarBackdrop = document.getElementById("sidebar-backdrop");
 
-    function showTab(tab) {
-      buttons.forEach((btn) => {
-        btn.classList.remove(
+    buttons.forEach((btn) => {
+      btn.classList.remove(
+        "text-green-600",
+        "font-semibold",
+        "border-b-2",
+        "border-green-600"
+      );
+      if (btn.textContent.trim() === tab) {
+        btn.classList.add(
           "text-green-600",
           "font-semibold",
           "border-b-2",
           "border-green-600"
         );
-        if (btn.textContent.trim() === tab) {
-          btn.classList.add(
-            "text-green-600",
-            "font-semibold",
-            "border-b-2",
-            "border-green-600"
-          );
-        }
-      });
+      }
+    });
 
-      tabContents.forEach((el) => el.classList.add("hidden"));
-      const activeTab = document.getElementById(`${tab}-tab`);
-      if (activeTab) activeTab.classList.remove("hidden");
+    tabContents.forEach((el) => el.classList.add("hidden"));
+
+    const activeTab = document.getElementById(`${tab}-tab`);
+    if (activeTab) {
+      activeTab.classList.remove("hidden");
+
+      setTimeout(() => {
+        document.querySelectorAll("canvas.chart").forEach((canvas) => {
+          if (canvas._chartInstance) canvas._chartInstance.resize();
+        });
+      }, 100);
     }
+  }
 
-    function toggleSidebar() {
-      sidebar.classList.toggle("-translate-x-full");
-      sidebarBackdrop.classList.toggle("hidden");
-    }
+  function toggleSidebar() {
+    sidebar.classList.toggle("-translate-x-full");
+    sidebarBackdrop.classList.toggle("hidden");
+  }
 
-    function closeSidebar() {
-      sidebar.classList.add("-translate-x-full");
-      sidebarBackdrop.classList.add("hidden");
-    }
+  function closeSidebar() {
+    sidebar.classList.add("-translate-x-full");
+    sidebarBackdrop.classList.add("hidden");
+  }
 
-    function logout() {
-      fetch("/auth/logout", {
-        method: "GET",
-        credentials: "include",
-      }).then(() => {
+  function logout() {
+    fetch("/auth/logout", { method: "GET", credentials: "include" }).then(
+      () => {
         localStorage.removeItem("google_id_token");
         window.location.href = "/";
+      }
+    );
+  }
+
+  // ✅ Utility: Populate currency options
+  function populateCurrencyDropdown(brand) {
+    currencySelect.innerHTML = '';
+    if (brandToCurrency[brand]) {
+      brandToCurrency[brand].forEach((currency) => {
+        const option = document.createElement("option");
+        option.value = currency;
+        option.textContent = currency;
+        currencySelect.appendChild(option);
       });
     }
+  }
 
-    document.addEventListener("DOMContentLoaded", () => {
-      showTab("Daily");
-      if (window.lucide) window.lucide.createIcons();
+  // init chart
+  function initAllCharts() {
+    setTimeout(() => {
+      document.querySelectorAll("canvas.chart").forEach((canvas) => {
+        const ctx = canvas.getContext("2d");
+
+        const labels = JSON.parse(canvas.dataset.chartLabels || "[]");
+        const values = JSON.parse(canvas.dataset.chartValues || "[]");
+
+        // Destroy any existing chart instance first (if re-rendering)
+        if (canvas._chartInstance) {
+          canvas._chartInstance.destroy();
+        }
+
+        const chart = new Chart(ctx, {
+          type: "line",
+          data: {
+            labels,
+            datasets: [
+              {
+                label: "History",
+                data: values,
+                borderColor: "#16a34a",
+                backgroundColor: "rgba(22,163,74,0.1)",
+                borderWidth: 2,
+                fill: true,
+                tension: 0.3,
+                pointRadius: 2,
+              },
+            ],
+          },
+          options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            animation: {
+              duration: 0, // optional: prevents slow load
+            },
+            plugins: {
+              title: {
+                display: true,
+                text: '7-Day Insights',
+                font: {
+                  size: 14,
+                  weight: 'bold'
+                },
+                padding: {
+                  top: 10,
+                  bottom: 20
+                },
+                color: '#16a34a' // Tailwind gray-800
+              },
+              legend: { display: false },
+            },
+            scales: {
+              x: {
+                ticks: { font: { size: 10 } },
+              },
+              y: {
+                beginAtZero: true,
+                ticks: { font: { size: 10 } },
+              },
+            },
+          },
+        });
+
+        canvas._chartInstance = chart;
+      });
+    }, 150); // Delay allows DOM layout to settle
+  }
+
+  function updateDashboard(data) {
+    const tabContentParent = document.querySelector("#d-tab-content");
+    const groupedSummary = data.grouped_summary;
+    const tabs = ["Daily", "Monthly", "Total"];
+    let allTabContent = "";
+
+    tabs.forEach((tab, tabIndex) => {
+      const tabData = groupedSummary[tab];
+      let sectionHTML = `
+      <section id="${tab}-tab"
+        class="tab-content ${
+          tab !== "Daily" ? "hidden" : ""
+        } grid grid-cols-1 md:grid-cols-2 gap-4 transition-all duration-300 ease-in-out">
+    `;
+
+      tabData.forEach(([category, items]) => {
+        const spanClass =
+          category.toLowerCase() === "engagements" || items.length >= 2
+            ? "col-span-1 md:col-span-2"
+            : "";
+
+        let categoryHTML = `
+        <div class="bg-white shadow rounded-2xl p-5 ${spanClass}">
+          <h3 class="text-lg font-semibold text-gray-700 mb-4 border-b pb-2 flex items-center gap-2">
+            <i data-lucide="calendar" class="w-4 h-4 text-green-500"></i>
+            ${category}
+          </h3>
+          <div class="flex flex-wrap gap-4">
+      `;
+
+        items.forEach((item, i) => {
+          const isGrowth = parseFloat(item.delta) >= 0;
+          const isTwoItems = items.length === 2;
+
+          const itemHTML = `
+          <div class="flex-1 min-w-[300px] max-w-full ${
+            isTwoItems ? "md:basis-[calc(50%-0.5rem)]" : "md:basis-full"
+          } 
+                      bg-white border border-gray-200 shadow-sm hover:shadow-md transition-all duration-300 
+                      transform hover:-translate-y-1 rounded-xl p-4 flex flex-col md:flex-row justify-between items-center gap-4">
+            
+            <div class="w-fit">
+              <div class="text-sm font-medium text-gray-600">
+                ${item.metric}
+              </div>
+              <div class="text-2xl font-extrabold text-green-700">
+                ${Number(item.today).toLocaleString()}
+              </div>
+              <div class="text-xs text-gray-500">
+                Yesterday: <span class="font-semibold">${Number(
+                  item.yesterday
+                ).toLocaleString()}</span>
+              </div>
+              <div class="mt-1 flex items-center gap-1 text-sm font-semibold ${
+                isGrowth ? "text-green-600" : "text-red-600"
+              }">
+                <i data-lucide="${
+                  isGrowth ? "arrow-up" : "arrow-down"
+                }" class="w-4 h-4"></i>
+                ${Number(item.delta).toLocaleString()}
+                <span class="text-gray-500 font-normal text-xs">(${
+                  item.change
+                })</span>
+              </div>
+            </div>
+
+            <div class="rounded-xl bg-white shadow p-2 mt-2 w-full h-[200px]">
+              <canvas 
+                data-chart-id="chart-${tab}-${category}-${i}"
+                data-chart-labels='${JSON.stringify(
+                  item.chart.labels.map((label) => {
+                    const parts = label.split("/");
+                    return parts.length === 3 ? `${parts[0]}/${parts[1]}` : label;
+                  })
+                )}'
+
+                data-chart-values='${JSON.stringify(item.chart.values)}'
+                class="chart w-full">
+              </canvas>
+            </div>
+          </div>
+        `;
+
+          categoryHTML += itemHTML;
+        });
+
+        categoryHTML += `</div></div>`;
+        sectionHTML += categoryHTML;
+      });
+
+      sectionHTML += `</section>`;
+      allTabContent += sectionHTML;
     });
-  </script>
-</div>
+
+    tabContentParent.innerHTML = allTabContent;
+
+    // Reinitialize any dynamic components (like lucide icons or charts)
+    if (window.lucide) lucide.createIcons();
+    initAllCharts(); // You'll need to implement this to pick up canvas elements
+  }
+
+  //function handle api call
+  function fetchData(selectedBrand, selectedCurrency){
+    const loader = document.getElementById("dashboard-loader");
+      loader.classList.remove("hidden");
+    
+      fetch(
+        `/api/dashboard-data?brand=${selectedBrand}&currency=${selectedCurrency}`
+      )
+        .then((res) => res.json())
+        .then((data) => {
+          updateDashboard(data);
+          showTab("Daily");
+          // Update your UI with new data here if needed
+        })
+        .catch((err) => {
+          console.error("API error:", err);
+        })
+        .finally(() => {
+          loader.classList.add("hidden");
+        });
+  }
+  // ✅ Brand change event: Only update currency options
+  brandSelect.addEventListener("change", () => {
+    const selectedBrand = brandSelect.value;
+    const selectedCurrency = currencySelect.value;
+    populateCurrencyDropdown(selectedBrand);
+    fetchData(selectedBrand,selectedCurrency)
+  });
+
+  // ✅ Currency change event: Fire API call
+  currencySelect.addEventListener("change", () => {
+    const selectedBrand = brandSelect.value;
+    const selectedCurrency = currencySelect.value;
+
+    if (selectedBrand && selectedCurrency) {
+      fetchData(selectedBrand,selectedCurrency)
+    }
+  });
+
+  document.addEventListener("DOMContentLoaded", () => {
+    //showTab("Daily");
+    if (window.lucide) window.lucide.createIcons();
+    fetchData("BAJI","BDT")
+    populateCurrencyDropdown("BAJI");
+  });
+
+  // Resize on window
+  window.addEventListener("resize", () => {
+    document.querySelectorAll("canvas.chart").forEach((canvas) => {
+      if (canvas._chartInstance) canvas._chartInstance.resize();
+    });
+  });
+</script>
 {% endblock %}
