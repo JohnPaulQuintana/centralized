@@ -94,8 +94,9 @@ block content %}
               Analytics Dashboard
             </h1>
             <p class="text-gray-600 text-sm">
-              Comparing <strong>{{ today_label }}</strong> vs
-              <strong>{{ yesterday_label }}</strong>
+              <!-- Comparing <strong>{{ today_label }}</strong> vs -->
+              Today's Trends & 31-Day Performance
+              <span class="block">DATE: <strong>{{ today_label }}</strong></span>
             </p>
           </div>
           <img
@@ -199,14 +200,30 @@ block content %}
 </div>
 
 <!-- Enhanced Dashboard Loader -->
-<div id="dashboard-loader" class="hidden absolute inset-0 bg-white bg-opacity-80 z-50 flex flex-col items-center justify-center space-y-4">
+<div
+  id="dashboard-loader"
+  class="hidden absolute inset-0 bg-white bg-opacity-80 z-50 flex flex-col items-center justify-center space-y-4"
+>
   <!-- Spinner -->
   <div class="relative w-14 h-14">
-    <div class="absolute inset-0 rounded-full border-4 border-t-green-500 border-gray-300 animate-spin"></div>
+    <div
+      class="absolute inset-0 rounded-full border-4 border-t-green-500 border-gray-300 animate-spin"
+    ></div>
     <div class="absolute inset-1 rounded-full bg-white"></div>
     <!-- Sheet Icon Center -->
-    <svg class="absolute inset-2 w-6 h-6 text-green-500 m-auto" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2v-6m-6-6l6 6m-6-6v6h6" />
+    <svg
+      class="absolute inset-2 w-6 h-6 text-green-500 m-auto"
+      xmlns="http://www.w3.org/2000/svg"
+      fill="none"
+      viewBox="0 0 24 24"
+      stroke="currentColor"
+    >
+      <path
+        stroke-linecap="round"
+        stroke-linejoin="round"
+        stroke-width="2"
+        d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2v-6m-6-6l6 6m-6-6v6h6"
+      />
     </svg>
   </div>
 
@@ -215,7 +232,6 @@ block content %}
     Loading data from spreadsheet...
   </div>
 </div>
-
 
 <!-- JS -->
 <script>
@@ -290,7 +306,7 @@ block content %}
 
   // ✅ Utility: Populate currency options
   function populateCurrencyDropdown(brand) {
-    currencySelect.innerHTML = '';
+    currencySelect.innerHTML = "";
     if (brandToCurrency[brand]) {
       brandToCurrency[brand].forEach((currency) => {
         const option = document.createElement("option");
@@ -339,24 +355,25 @@ block content %}
               duration: 0, // optional: prevents slow load
             },
             plugins: {
-              title: {
-                display: true,
-                text: '7-Day Insights',
-                font: {
-                  size: 14,
-                  weight: 'bold'
-                },
-                padding: {
-                  top: 10,
-                  bottom: 20
-                },
-                color: '#16a34a' // Tailwind gray-800
-              },
+              //title: {
+              //  display: true,
+              //  text: "7-Day Insights",
+              //  font: {
+              //    size: 14,
+              //    weight: "bold",
+              //  },
+              //  padding: {
+              //    top: 10,
+              //    bottom: 20,
+              //  },
+              //  color: "#16a34a", // Tailwind gray-800
+              // },
               legend: { display: false },
             },
             scales: {
               x: {
                 ticks: { font: { size: 10 } },
+                autoSkip: false,
               },
               y: {
                 beginAtZero: true,
@@ -406,59 +423,71 @@ block content %}
           const isTwoItems = items.length === 2;
 
           const itemHTML = `
-          <div class="flex-1 min-w-[300px] max-w-full ${
-  isTwoItems ? "md:basis-[calc(50%-0.5rem)]" : "md:basis-full"
-} 
-  bg-white border border-gray-100 shadow hover:shadow-md transition duration-300 
-  transform hover:-translate-y-1 rounded-2xl p-5 flex flex-col md:flex-row gap-4 justify-between items-center">
+          <div class="flex-1 min-w-[300px] max-w-full 
+              ${isTwoItems ? "md:basis-[calc(50%-0.5rem)]" : "md:basis-full"} 
+              bg-white border border-gray-200 shadow-sm hover:shadow-md 
+              transition-all duration-300 transform hover:-translate-y-1 
+              rounded-xl p-4 flex flex-col md:flex-row justify-between items-center gap-4">
 
-  <!-- LEFT: Metric + Numbers -->
-  <div class="flex flex-row md:flex-col gap-2 w-fit">
-    <div>
-      <div class="text-sm font-semibold text-gray-500 uppercase tracking-wide">
-        ${item.metric}
-      </div>
+              <!-- Metric Display -->
+              <div class="w-fit">
+                <div class="text-sm font-medium text-gray-600">
+                  ${item.metric}
+                </div>
+                <div class="text-2xl font-extrabold text-green-700">
+                  ${Number(item.today).toLocaleString()}
+                </div>
+                <div class="text-xs text-gray-500">
+                  Yesterday: <span class="font-semibold">
+                    ${Number(item.yesterday).toLocaleString()}
+                  </span>
+                </div>
+                <div class="mt-1 flex items-center gap-1 text-sm font-semibold 
+                  ${isGrowth ? "text-green-600" : "text-red-600"}">
+                  <i data-lucide="${
+                    isGrowth ? "arrow-up" : "arrow-down"
+                  }" class="w-4 h-4"></i>
+                  ${Number(item.delta).toLocaleString()}
+                  <span class="text-gray-500 font-normal text-xs">(${
+                    item.change
+                  })</span>
+                </div>
+              </div>
 
-      <!-- TODAY -->
-      <div class="text-3xl font-extrabold text-green-700 leading-tight">
-        ${Number(item.today).toLocaleString()}
-      </div>
+              <!-- Chart with Scrollable X Axis -->
+            <div class="rounded-xl bg-white shadow p-2 mt-2 w-full max-w-full overflow-hidden">
+  <span class="font-bold text-gray-500">Recent 31-Day Metrics (Newest First)</span>
+
+  <!-- Chart Scroll Wrapper -->
+  <div class="w-full overflow-x-auto">
+    <!-- Scrollable Area -->
+    <div class="inline-block min-w-[850px] h-[180px]">
+      <canvas
+        data-chart-id="chart-${tab}-${category}-${i}"
+        data-chart-labels='${JSON.stringify(
+          item.chart.labels.map((label) => {
+            const parts = label.split("/");
+            if (parts.length === 3) {
+              const [day, month, year] = parts.map(Number);
+              const date = new Date(year, month - 1, day);
+              return date.toLocaleDateString("en-US", {
+                month: "short",
+                day: "numeric",
+              });
+            }
+            return label;
+          })
+        )}'
+        data-chart-values='${JSON.stringify(item.chart.values)}'
+        class="chart w-full h-full">
+      </canvas>
     </div>
-
-    <!-- YESTERDAY -->
-    <div class="shadow p-2">
-      <div class="flex items-center gap-1 text-gray-500 text-xs">
-        <i class="lucide-clock w-4 h-4 opacity-70"></i>
-        Yesterday:
-        <span class="font-semibold">${Number(item.yesterday).toLocaleString()}</span>
-      </div>
-
-      <!-- CHANGE DELTA -->
-      <div class="mt-1 flex items-center gap-2 text-sm font-semibold ${
-        isGrowth ? "text-green-600" : "text-red-600"
-      }">
-        <i data-lucide="${isGrowth ? "arrow-up-right" : "arrow-down-right"}" class="w-4 h-4"></i>
-        ${Number(item.delta).toLocaleString()}
-        <span class="text-gray-400 text-xs font-medium">(${item.change})</span>
-      </div>
-    </div>
-  </div>
-
-  <!-- RIGHT: Chart -->
-  <div class="rounded-xl bg-gray-50 shadow-inner p-2 w-full h-[180px]">
-    <canvas 
-      data-chart-id="chart-${tab}-${category}-${i}"
-      data-chart-labels='${JSON.stringify(
-        item.chart.labels.map((label) => {
-          const parts = label.split("/");
-          return parts.length === 3 ? `${parts[0]}/${parts[1]}` : label;
-        })
-      )}'
-      data-chart-values='${JSON.stringify(item.chart.values)}'
-      class="chart w-full h-full">
-    </canvas>
   </div>
 </div>
+
+
+            </div>
+
 
         `;
 
@@ -481,32 +510,32 @@ block content %}
   }
 
   //function handle api call
-  function fetchData(selectedBrand, selectedCurrency){
+  function fetchData(selectedBrand, selectedCurrency) {
     const loader = document.getElementById("dashboard-loader");
-      loader.classList.remove("hidden");
-    
-      fetch(
-        `/api/dashboard-data?brand=${selectedBrand}&currency=${selectedCurrency}`
-      )
-        .then((res) => res.json())
-        .then((data) => {
-          updateDashboard(data);
-          showTab("Daily");
-          // Update your UI with new data here if needed
-        })
-        .catch((err) => {
-          console.error("API error:", err);
-        })
-        .finally(() => {
-          loader.classList.add("hidden");
-        });
+    loader.classList.remove("hidden");
+
+    fetch(
+      `/api/dashboard-data?brand=${selectedBrand}&currency=${selectedCurrency}`
+    )
+      .then((res) => res.json())
+      .then((data) => {
+        updateDashboard(data);
+        showTab("Daily");
+        // Update your UI with new data here if needed
+      })
+      .catch((err) => {
+        console.error("API error:", err);
+      })
+      .finally(() => {
+        loader.classList.add("hidden");
+      });
   }
   // ✅ Brand change event: Only update currency options
   brandSelect.addEventListener("change", () => {
     const selectedBrand = brandSelect.value;
     const selectedCurrency = currencySelect.value;
     populateCurrencyDropdown(selectedBrand);
-    fetchData(selectedBrand,selectedCurrency)
+    fetchData(selectedBrand, selectedCurrency);
   });
 
   // ✅ Currency change event: Fire API call
@@ -515,14 +544,14 @@ block content %}
     const selectedCurrency = currencySelect.value;
 
     if (selectedBrand && selectedCurrency) {
-      fetchData(selectedBrand,selectedCurrency)
+      fetchData(selectedBrand, selectedCurrency);
     }
   });
 
   document.addEventListener("DOMContentLoaded", () => {
     //showTab("Daily");
     if (window.lucide) window.lucide.createIcons();
-    fetchData("BAJI","BDT")
+    fetchData("BAJI", "BDT");
     populateCurrencyDropdown("BAJI");
   });
 

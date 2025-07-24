@@ -26,6 +26,20 @@
         border-right-color: transparent;
         border-bottom-color: transparent;
       }
+      /* Thin green horizontal scrollbar for all browsers supporting WebKit */
+::-webkit-scrollbar {
+  height: 6px; /* thinner scrollbar */
+}
+
+::-webkit-scrollbar-thumb {
+  background-color: #22c55e; /* Tailwind green-500 */
+  border-radius: 6px;
+}
+
+::-webkit-scrollbar-track {
+  background-color: #e0f2f1; /* Optional: track color */
+}
+
     </style>
   </head>
   <body class="bg-gray-50 text-gray-900 h-full">
