@@ -198,10 +198,24 @@ block content %}
   </div>
 </div>
 
-<!-- Loader -->
-<div id="dashboard-loader" class="hidden absolute inset-0 bg-white bg-opacity-70 z-50 flex items-center justify-center">
-  <div class="loader ease-linear rounded-full border-8 border-t-8 border-green-500 h-12 w-12 animate-spin"></div>
+<!-- Enhanced Dashboard Loader -->
+<div id="dashboard-loader" class="hidden absolute inset-0 bg-white bg-opacity-80 z-50 flex flex-col items-center justify-center space-y-4">
+  <!-- Spinner -->
+  <div class="relative w-14 h-14">
+    <div class="absolute inset-0 rounded-full border-4 border-t-green-500 border-gray-300 animate-spin"></div>
+    <div class="absolute inset-1 rounded-full bg-white"></div>
+    <!-- Sheet Icon Center -->
+    <svg class="absolute inset-2 w-6 h-6 text-green-500 m-auto" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2v-6m-6-6l6 6m-6-6v6h6" />
+    </svg>
+  </div>
+
+  <!-- Loading Text -->
+  <div class="text-sm text-gray-600 font-medium animate-pulse tracking-wide">
+    Loading data from spreadsheet...
+  </div>
 </div>
+
 
 <!-- JS -->
 <script>
