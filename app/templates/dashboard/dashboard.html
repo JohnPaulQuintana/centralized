@@ -405,7 +405,7 @@ block content %}
 
       tabData.forEach(([category, items]) => {
         const spanClass =
-          category.toLowerCase() === "engagements" || items.length >= 2
+          category.toLowerCase() === "engagements" && items.length >= 2
             ? "col-span-1 md:col-span-2"
             : "";
 
