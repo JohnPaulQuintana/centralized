@@ -393,51 +393,59 @@ block content %}
 
           const itemHTML = `
           <div class="flex-1 min-w-[300px] max-w-full ${
-            isTwoItems ? "md:basis-[calc(50%-0.5rem)]" : "md:basis-full"
-          } 
-                      bg-white border border-gray-200 shadow-sm hover:shadow-md transition-all duration-300 
-                      transform hover:-translate-y-1 rounded-xl p-4 flex flex-col md:flex-row justify-between items-center gap-4">
-            
-            <div class="w-fit">
-              <div class="text-sm font-medium text-gray-600">
-                ${item.metric}
-              </div>
-              <div class="text-2xl font-extrabold text-green-700">
-                ${Number(item.today).toLocaleString()}
-              </div>
-              <div class="text-xs text-gray-500">
-                Yesterday: <span class="font-semibold">${Number(
-                  item.yesterday
-                ).toLocaleString()}</span>
-              </div>
-              <div class="mt-1 flex items-center gap-1 text-sm font-semibold ${
-                isGrowth ? "text-green-600" : "text-red-600"
-              }">
-                <i data-lucide="${
-                  isGrowth ? "arrow-up" : "arrow-down"
-                }" class="w-4 h-4"></i>
-                ${Number(item.delta).toLocaleString()}
-                <span class="text-gray-500 font-normal text-xs">(${
-                  item.change
-                })</span>
-              </div>
-            </div>
+  isTwoItems ? "md:basis-[calc(50%-0.5rem)]" : "md:basis-full"
+} 
+  bg-white border border-gray-100 shadow hover:shadow-md transition duration-300 
+  transform hover:-translate-y-1 rounded-2xl p-5 flex flex-col md:flex-row gap-4 justify-between items-center">
 
-            <div class="rounded-xl bg-white shadow p-2 mt-2 w-full h-[200px]">
-              <canvas 
-                data-chart-id="chart-${tab}-${category}-${i}"
-                data-chart-labels='${JSON.stringify(
-                  item.chart.labels.map((label) => {
-                    const parts = label.split("/");
-                    return parts.length === 3 ? `${parts[0]}/${parts[1]}` : label;
-                  })
-                )}'
+  <!-- LEFT: Metric + Numbers -->
+  <div class="flex flex-row md:flex-col gap-2 w-fit">
+    <div>
+      <div class="text-sm font-semibold text-gray-500 uppercase tracking-wide">
+        ${item.metric}
+      </div>
 
-                data-chart-values='${JSON.stringify(item.chart.values)}'
-                class="chart w-full">
-              </canvas>
-            </div>
-          </div>
+      <!-- TODAY -->
+      <div class="text-3xl font-extrabold text-green-700 leading-tight">
+        ${Number(item.today).toLocaleString()}
+      </div>
+    </div>
+
+    <!-- YESTERDAY -->
+    <div class="shadow p-2">
+      <div class="flex items-center gap-1 text-gray-500 text-xs">
+        <i class="lucide-clock w-4 h-4 opacity-70"></i>
+        Yesterday:
+        <span class="font-semibold">${Number(item.yesterday).toLocaleString()}</span>
+      </div>
+
+      <!-- CHANGE DELTA -->
+      <div class="mt-1 flex items-center gap-2 text-sm font-semibold ${
+        isGrowth ? "text-green-600" : "text-red-600"
+      }">
+        <i data-lucide="${isGrowth ? "arrow-up-right" : "arrow-down-right"}" class="w-4 h-4"></i>
+        ${Number(item.delta).toLocaleString()}
+        <span class="text-gray-400 text-xs font-medium">(${item.change})</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- RIGHT: Chart -->
+  <div class="rounded-xl bg-gray-50 shadow-inner p-2 w-full h-[180px]">
+    <canvas 
+      data-chart-id="chart-${tab}-${category}-${i}"
+      data-chart-labels='${JSON.stringify(
+        item.chart.labels.map((label) => {
+          const parts = label.split("/");
+          return parts.length === 3 ? `${parts[0]}/${parts[1]}` : label;
+        })
+      )}'
+      data-chart-values='${JSON.stringify(item.chart.values)}'
+      class="chart w-full h-full">
+    </canvas>
+  </div>
+</div>
+
         `;
 
           categoryHTML += itemHTML;
