@@ -1,5 +1,6 @@
 from collections import defaultdict
 import re
+from datetime import datetime, timedelta
 from fastapi import APIRouter, Request, Depends
 from fastapi.responses import HTMLResponse, RedirectResponse
 from fastapi.templating import Jinja2Templates
@@ -62,42 +63,43 @@ def get_dashboard_data(brand: str, currency: str):
         "date_labels": labels
     }
 
-
+yesterday = datetime.now() - timedelta(days=1)
+yesterday_label = yesterday.strftime('%d/%m/%Y')
 @router.get("/dashboard", response_class=HTMLResponse)
 def dashboard(request: Request, user=Depends(auth_required)):
-    sheet_data = find_data_by_keyword("BAJI", "BDT")
-    summary, today_label, yesterday_label, labels = summarize_metrics_with_chart_data(sheet_data)
+    # sheet_data = find_data_by_keyword("BAJI", "BDT")
+    # summary, today_label, yesterday_label, labels = summarize_metrics_with_chart_data(sheet_data)
 
-    grouped = {
-        "Daily": [],
-        "Monthly": [],
-        "Total": [],
-    }
+    # grouped = {
+    #     "Daily": [],
+    #     "Monthly": [],
+    #     "Total": [],
+    # }
 
-    for item in summary:
-        metric = item["metric"].upper().strip()
-        if metric.startswith("DAILY "):
-            grouped["Daily"].append(item)
-        elif metric.startswith("MONTHLY "):
-            grouped["Monthly"].append(item)
-        else:
-            grouped["Total"].append(item)
+    # for item in summary:
+    #     metric = item["metric"].upper().strip()
+    #     if metric.startswith("DAILY "):
+    #         grouped["Daily"].append(item)
+    #     elif metric.startswith("MONTHLY "):
+    #         grouped["Monthly"].append(item)
+    #     else:
+    #         grouped["Total"].append(item)
 
 
-    grouped["Daily"] = group_by_category(sort_by_metric_order(grouped["Daily"], daily_order))
-    grouped["Monthly"] = group_by_category(sort_by_metric_order(grouped["Monthly"], monthly_order))
-    grouped["Total"] = group_by_category(sort_by_metric_order(grouped["Total"], total_order))
+    # grouped["Daily"] = group_by_category(sort_by_metric_order(grouped["Daily"], daily_order))
+    # grouped["Monthly"] = group_by_category(sort_by_metric_order(grouped["Monthly"], monthly_order))
+    # grouped["Total"] = group_by_category(sort_by_metric_order(grouped["Total"], total_order))
 
-    # You can apply similar ordering/grouping for Monthly and Total if needed
-    print(labels)
+    # # You can apply similar ordering/grouping for Monthly and Total if needed
+    # print(labels)
     return templates.TemplateResponse(
         "dashboard/dashboard.html",
         {
             "request": request,
             "user": user,
-            "grouped_summary": grouped,
-            "today_label": today_label,
-            "yesterday_label": yesterday_label,
-            "date_labels": labels,  # ✅ ADD THIS
+            # "grouped_summary": grouped,
+            "today_label": yesterday_label,
+            # "yesterday_label": yesterday_label,
+            # "date_labels": labels,  # ✅ ADD THIS
         }
     )
