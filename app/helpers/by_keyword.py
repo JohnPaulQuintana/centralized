@@ -68,7 +68,7 @@ def summarize_metrics_with_chart_data(sheet_data):
                 "change": (
                     "increase" if delta > 0 else
                     "decrease" if delta < 0 else
-                    "no change"
+                    "stable"
                 ),
                 "chart": {
                     "labels": date_labels,
