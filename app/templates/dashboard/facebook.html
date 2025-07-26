@@ -9,7 +9,13 @@ block content %}
       <i data-lucide="menu" class="w-6 h-6"></i>
     </button>
     <div class="flex items-center gap-2">
-      <a class="sheet border rounded-md p-2 text-green-700 pointer-cursor" href="/" target="_blank" rel="noopener noreferrer">Spreadsheet</a>
+      <a
+        class="sheet border rounded-md p-2 text-green-700 pointer-cursor"
+        href="/"
+        target="_blank"
+        rel="noopener noreferrer"
+        >Spreadsheet</a
+      >
       <img
         src="{{ user.picture }}"
         alt="User"
@@ -27,114 +33,12 @@ block content %}
 
   <div class="grid grid-cols-1 md:grid-cols-[260px,1fr] h-full w-full">
     <!-- Sidebar -->
-    <aside
-      id="sidebar"
-      class="bg-white shadow-md px-6 py-8 space-y-8 z-30 border-r fixed top-0 left-0 h-screen w-64 transform transition-transform duration-300 ease-in-out -translate-x-full md:translate-x-0 md:relative md:block"
-    >
-      <div
-        class="text-2xl font-extrabold text-green-600 flex items-center gap-2"
-      >
-        <i data-lucide="bar-chart-3" class="w-6 h-6"></i> Centralized
-      </div>
-
-      <div>
-        <p class="text-gray-600 text-sm">Logged in as</p>
-        <div class="font-semibold">{{ user.name }}</div>
-        <div class="text-sm text-gray-500">{{ user.email }}</div>
-      </div>
-
-      <!-- Facebook Page -->
-      <div class="mt-6">
-        <h2
-          class="text-sm font-semibold text-gray-600 mb-2 flex items-center gap-2"
-        >
-          <i data-lucide="facebook" class="w-4 h-4 text-green-600"></i>
-          Facebook Page
-        </h2>
-        <!-- Month Dropdown -->
-        <label class="block text-xs text-gray-500 mb-1 mt-4">Month</label>
-        <select
-          id="month-select"
-          class="w-full border rounded px-2 py-1 text-sm focus:outline-none focus:ring focus:border-green-500"
-        >
-          <!-- Options will be added dynamically -->
-        </select>
-
-        <!-- Brand Dropdown -->
-        <label class="block text-xs text-gray-500 mb-1">Brand</label>
-        <select
-          id="brand-select"
-          class="w-full border rounded px-2 py-1 text-sm focus:outline-none focus:ring focus:border-green-500"
-        >
-          <option value="BAJI">BAJI</option>
-          <option value="SIX6S">SIX6S</option>
-          <option value="JEETBUZZ">JEETBUZZ</option>
-          <option value="BADSHA">BADSHA</option>
-        </select>
-
-        <!-- Currency Dropdown -->
-        <label class="block text-xs text-gray-500 mt-3 mb-1">Currency</label>
-        <select
-          id="currency-select"
-          class="w-full border rounded px-2 py-1 text-sm focus:outline-none focus:ring focus:border-green-500"
-        >
-          <option value="">Select a currency</option>
-        </select>
-      </div>
-
-      <button
-        onclick="logout()"
-        class="w-full mt-4 bg-red-500 text-white py-2 rounded-lg hover:bg-red-600 transition"
-      >
-        Logout
-      </button>
-    </aside>
+    {% include "partials/_fb_sidebar.html" %}
 
     <!-- Main Content -->
     <main class="relative flex flex-col h-screen overflow-hidden">
       <!-- Sticky Header -->
-      <header class="sticky top-0 z-10 bg-white shadow-sm border-b px-6 py-4">
-        <div
-          class="flex flex-col md:flex-row md:items-center md:justify-between gap-4"
-        >
-          <div>
-            <h1
-              class="text-xl md:text-2xl font-bold text-green-700 flex items-center gap-2"
-            >
-              <i data-lucide="pie-chart" class="w-6 h-6 text-green-500"></i>
-              Trend Analytics Dashboard
-            </h1>
-            <p class="text-gray-600 text-sm">
-              <!-- Comparing <strong>{{ today_label }}</strong> vs -->
-              Today's Trends & 31-Day Performance
-              <span class="block"
-                >DATE: <strong>{{ today_label }}</strong></span
-              >
-            </p>
-          </div>
-
-          <div class="flex items-center gap-2">
-            <a class="hidden md:flex sheet border rounded-md p-2 text-green-700 pointer-cursor hover:bg-gray-100" href="/" target="_blank" rel="noopener noreferrer">Spreadsheet</a>
-            <img
-              src="{{ user.picture }}"
-              alt="User"
-              class="w-10 h-10 rounded-full border object-cover hidden md:block"
-            />
-          </div>
-        </div>
-
-        <!-- Tabs -->
-        <div class="mt-4 flex gap-6 border-b pb-2 overflow-x-auto">
-          {% for tab in ['Daily', 'Monthly', 'Total'] %}
-          <button
-            onclick="showTab('{{ tab }}')"
-            class="tab-btn {% if tab == 'Daily' %}text-green-600 font-semibold border-b-2 border-green-600{% else %}text-gray-600 hover:text-green-700{% endif %} pb-1 transition duration-300 whitespace-nowrap"
-          >
-            {{ tab }}
-          </button>
-          {% endfor %}
-        </div>
-      </header>
+      {% include "partials/header.html" %}
 
       <!-- Tab Content -->
       <div id="d-tab-content" class="flex-1 overflow-y-auto p-2 md:p-4"></div>
@@ -187,12 +91,48 @@ block content %}
   const brandSelect = document.getElementById("brand-select");
   const currencySelect = document.getElementById("currency-select");
   const monthSelect = document.getElementById("month-select");
+  const platformSelect = document.getElementById("platform-select");
+  const platformIcon = document.getElementById("platform-icon");
+  const platformIconHeader = document.getElementById("platform-icon-header");
+  const platformIconTitle = document.getElementById("platform-icon-title");
+  const iconMap = {
+    fb: "facebook",
+    ig: "instagram",
+    yt: "youtube",
+    x: "twitter"
+  };
+  const iconMapTitle = {
+    fb: "Facebook Page",
+    ig: "Instagram Page",
+    yt: "Youtube Page",
+    x: "Twitter Page"
+  };
 
-  const brandToCurrency = {
+  const fbBrandToCurrency = {
     BAJI: ["BDT", "PKR", "NPR", "INR"],
     SIX6S: ["BDT", "PKR", "INR"],
     JEETBUZZ: ["BDT", "PKR", "INR", "BDT-NEW", "INR-NEW"],
     BADSHA: ["BDT"],
+  };
+
+  const igBrandToCurrency = {
+    BAJI: ["baji.sports", "bajilive.casino"],
+    SIX6S: ["six6s.sport", "six6s.casino"],
+    JEETBUZZ: ["jeetbuzzsports", "jeetbuzzcasino"],
+    BADSHA: ["BDT"],
+  };
+
+  const ytBrandToCurrency = {
+    BAJI: ["NPR","INR","PKR","BDT"],
+    SIX6S: ["BDT","PKR","INR"],
+    JEETBUZZ: ["BDT","PKR","INR"],
+    BADSHA: ["BDT"],
+  };
+
+  const xBrandToCurrency = {
+    BAJI: ["BDT","BADSHA","BAJI-CASINO","NPR"],
+    SIX6S: ["PKR","BDT","INR"],
+    JEETBUZZ: ["BDT","INR"],
   };
 
   function showTab(tab) {
@@ -217,11 +157,9 @@ block content %}
     });
 
     tabContents.forEach((el) => el.classList.add("hidden"));
-
     const activeTab = document.getElementById(`${tab}-tab`);
     if (activeTab) {
       activeTab.classList.remove("hidden");
-
       setTimeout(() => {
         document.querySelectorAll("canvas.chart").forEach((canvas) => {
           if (canvas._chartInstance) canvas._chartInstance.resize();
@@ -249,17 +187,42 @@ block content %}
     );
   }
 
-  // ✅ Utility: Populate currency options
-  function populateCurrencyDropdown(brand) {
+  // ✅ Populate currency dropdown based on platform & brand
+  function populateCurrencyDropdown(platform, brand) {
     currencySelect.innerHTML = "";
-    if (brandToCurrency[brand]) {
-      brandToCurrency[brand].forEach((currency) => {
-        const option = document.createElement("option");
-        option.value = currency;
-        option.textContent = currency;
-        currencySelect.appendChild(option);
-      });
+
+    let currencyList = [];
+    switch (platform) {
+      case "fb":
+        currencyList = fbBrandToCurrency[brand] || [];
+        break;
+      case "ig":
+        currencyList = igBrandToCurrency[brand] || [];
+        break;
+      case "yt":
+        currencyList = ytBrandToCurrency[brand] || [];
+        break;
+      case "x":
+        currencyList = xBrandToCurrency[brand] || [];
+        break;
+      default:
+        currencyList = [];
     }
+
+    // Optional: Add default option
+    //const defaultOption = document.createElement("option");
+    //defaultOption.textContent = "Select currency";
+    //defaultOption.disabled = true;
+    //defaultOption.selected = true;
+    //currencySelect.appendChild(defaultOption);
+
+    // Populate
+    currencyList.forEach((currency) => {
+      const option = document.createElement("option");
+      option.value = currency;
+      option.textContent = currency;
+      currencySelect.appendChild(option);
+    });
   }
 
   // init chart
@@ -362,7 +325,7 @@ block content %}
       `;
 
         items.forEach((item, i) => {
-          document.querySelectorAll(".sheet").forEach(el => {
+          document.querySelectorAll(".sheet").forEach((el) => {
             el.href = item.sheet_url;
           });
 
@@ -476,12 +439,17 @@ block content %}
   }
 
   //function handle api call
-  function fetchData(selectedBrand, selectedCurrency, selectedMonth) {
+  function fetchData(
+    selectedBrand,
+    selectedCurrency,
+    selectedMonth,
+    selectedPlatform
+  ) {
     const loader = document.getElementById("dashboard-loader");
     loader.classList.remove("hidden");
 
     fetch(
-      `/api/dashboard-data?brand=${selectedBrand}&currency=${selectedCurrency}&month=${selectedMonth}`
+      `/api/dashboard-data?brand=${selectedBrand}&currency=${selectedCurrency}&month=${selectedMonth}&platform=${selectedPlatform}`
     )
       .then((res) => res.json())
       .then((data) => {
@@ -496,65 +464,114 @@ block content %}
         loader.classList.add("hidden");
       });
   }
-  // ✅ Brand change event: Only update currency options
-  brandSelect.addEventListener("change", () => {
-    const selectedBrand = brandSelect.value;
-    const selectedCurrency = currencySelect.value;
-    const selectedMonth = monthSelect.value
-    populateCurrencyDropdown(selectedBrand);
-    fetchData(selectedBrand, selectedCurrency,selectedMonth);
-  });
 
-  // ✅ Currency change event: Fire API call
-  currencySelect.addEventListener("change", () => {
-    const selectedBrand = brandSelect.value;
-    const selectedCurrency = currencySelect.value;
-    const selectedMonth = monthSelect.value
-    if (selectedBrand && selectedCurrency) {
-      fetchData(selectedBrand, selectedCurrency, selectedMonth);
-    }
-  });
+  // INIT + EVENT HANDLERS
 
-  monthSelect.addEventListener("change", () => {
-    const selectedBrand = brandSelect.value;
-    const selectedCurrency = currencySelect.value;
-    const selectedMonth = monthSelect.value
-    if (selectedBrand && selectedCurrency && selectedMonth) {
-      fetchData(selectedBrand, selectedCurrency, selectedMonth);
-    }
+  // Handle all dropdown changes
+  [platformSelect, brandSelect, currencySelect, monthSelect].forEach((el) => {
+    el.addEventListener("change", (e) => {
+      const selectedPlatform = platformSelect.value;
+      const iconName = iconMap[selectedPlatform];
+      const iconTitle = iconMapTitle[selectedPlatform]
+      console.log("Icon name:", iconName);
+      // Get fresh reference to icon container
+      const platformIcon = document.querySelector("#platform-icon");
+      const platformIconHeader = document.querySelector("#platform-icon-header");
+      const platformIconTitle = document.querySelector("#platform-icon-title");
+      platformIcon.setAttribute("data-lucide", iconName);
+      platformIconHeader.setAttribute("data-lucide", iconName);
+      platformIconTitle.innerHTML = iconTitle;
+
+      // Re-render
+      window.lucide.createIcons();
+      //lucide.createIcons(); // re-render
+
+      const selectedBrand = brandSelect.value;
+
+      // ⚠️ Update currency dropdown BEFORE fetching data
+      if (el === platformSelect || el === brandSelect) {
+        populateCurrencyDropdown(selectedPlatform, selectedBrand);
+
+        // Delay fetch so currencySelect updates (next tick)
+        setTimeout(() => {
+          const selectedCurrency = currencySelect.value;
+          const selectedMonth = monthSelect.value;
+
+          if (
+            selectedBrand &&
+            selectedCurrency &&
+            selectedMonth &&
+            selectedPlatform
+          ) {
+            fetchData(
+              selectedBrand,
+              selectedCurrency,
+              selectedMonth,
+              selectedPlatform
+            );
+          }
+        }, 0);
+      } else {
+        // Other dropdowns (currency/month) trigger fetch immediately
+        const selectedCurrency = currencySelect.value;
+        const selectedMonth = monthSelect.value;
+
+        if (
+          selectedBrand &&
+          selectedCurrency &&
+          selectedMonth &&
+          selectedPlatform
+        ) {
+          fetchData(
+            selectedBrand,
+            selectedCurrency,
+            selectedMonth,
+            selectedPlatform
+          );
+        }
+      }
+    });
   });
 
   document.addEventListener("DOMContentLoaded", () => {
-    //showTab("Daily");
-   
     const monthNames = [
-      "January", "February", "March", "April", "May", "June",
-      "July", "August", "September", "October", "November", "December"
+      "January",
+      "February",
+      "March",
+      "April",
+      "May",
+      "June",
+      "July",
+      "August",
+      "September",
+      "October",
+      "November",
+      "December",
     ];
-    
+
     const today = new Date();
-    const currentMonth = today.getMonth(); // 0-11
+    const currentMonth = today.getMonth();
     const currentYear = today.getFullYear();
 
     monthNames.forEach((month, index) => {
       const option = document.createElement("option");
-      option.value = month; // Use 1-12
+      option.value = month;
       option.textContent = `${month} ${currentYear}`;
-      if (index > currentMonth) {
-        option.disabled = true; // Disable future months
-      }
-      if (index === currentMonth) {
-        option.selected = true;
-      }
+      if (index > currentMonth) option.disabled = true;
+      if (index === currentMonth) option.selected = true;
       monthSelect.appendChild(option);
     });
 
     if (window.lucide) window.lucide.createIcons();
-    populateCurrencyDropdown("BAJI");
-    fetchData(brandSelect.value, currencySelect.value, monthSelect.value);
+    populateCurrencyDropdown(platformSelect.value, brandSelect.value);
+    fetchData(
+      brandSelect.value,
+      currencySelect.value,
+      monthSelect.value,
+      platformSelect.value
+    );
   });
 
-  // Resize on window
   window.addEventListener("resize", () => {
     document.querySelectorAll("canvas.chart").forEach((canvas) => {
       if (canvas._chartInstance) canvas._chartInstance.resize();
