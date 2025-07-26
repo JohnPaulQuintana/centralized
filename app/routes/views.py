@@ -43,10 +43,13 @@ def index(request: Request):
     return templates.TemplateResponse("auth/auth.html", {"request": request})
 
 @router.get("/api/dashboard-data")
-def get_dashboard_data(brand: str, currency: str):
+def get_dashboard_data(brand: str, currency: str, month: str):
     sheet_data = find_data_by_keyword(brand, currency)
-    summary, today_label, yesterday_label, labels = summarize_metrics_with_chart_data(sheet_data)
-
+    # summary, today_label, yesterday_label, labels = summarize_metrics_with_chart_data(sheet_data)
+    # 2. Parse with optional month filter
+    summary, today_label, yesterday_label, labels = summarize_metrics_with_chart_data(sheet_data, month)
+    print("SUMMARY:")
+    print(summary)
     grouped = {
         "Daily": group_by_category(sort_by_metric_order(
             [i for i in summary if i["metric"].startswith("DAILY")], daily_order)),

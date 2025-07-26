@@ -51,6 +51,14 @@ block content %}
           <i data-lucide="facebook" class="w-4 h-4 text-green-600"></i>
           Facebook Page
         </h2>
+        <!-- Month Dropdown -->
+        <label class="block text-xs text-gray-500 mb-1 mt-4">Month</label>
+        <select
+          id="month-select"
+          class="w-full border rounded px-2 py-1 text-sm focus:outline-none focus:ring focus:border-green-500"
+        >
+          <!-- Options will be added dynamically -->
+        </select>
 
         <!-- Brand Dropdown -->
         <label class="block text-xs text-gray-500 mb-1">Brand</label>
@@ -178,6 +186,7 @@ block content %}
 
   const brandSelect = document.getElementById("brand-select");
   const currencySelect = document.getElementById("currency-select");
+  const monthSelect = document.getElementById("month-select");
 
   const brandToCurrency = {
     BAJI: ["BDT", "PKR", "NPR", "INR"],
@@ -467,12 +476,12 @@ block content %}
   }
 
   //function handle api call
-  function fetchData(selectedBrand, selectedCurrency) {
+  function fetchData(selectedBrand, selectedCurrency, selectedMonth) {
     const loader = document.getElementById("dashboard-loader");
     loader.classList.remove("hidden");
 
     fetch(
-      `/api/dashboard-data?brand=${selectedBrand}&currency=${selectedCurrency}`
+      `/api/dashboard-data?brand=${selectedBrand}&currency=${selectedCurrency}&month=${selectedMonth}`
     )
       .then((res) => res.json())
       .then((data) => {
@@ -491,25 +500,58 @@ block content %}
   brandSelect.addEventListener("change", () => {
     const selectedBrand = brandSelect.value;
     const selectedCurrency = currencySelect.value;
+    const selectedMonth = monthSelect.value
     populateCurrencyDropdown(selectedBrand);
-    fetchData(selectedBrand, selectedCurrency);
+    fetchData(selectedBrand, selectedCurrency,selectedMonth);
   });
 
   // ✅ Currency change event: Fire API call
   currencySelect.addEventListener("change", () => {
     const selectedBrand = brandSelect.value;
     const selectedCurrency = currencySelect.value;
-
+    const selectedMonth = monthSelect.value
     if (selectedBrand && selectedCurrency) {
-      fetchData(selectedBrand, selectedCurrency);
+      fetchData(selectedBrand, selectedCurrency, selectedMonth);
+    }
+  });
+
+  monthSelect.addEventListener("change", () => {
+    const selectedBrand = brandSelect.value;
+    const selectedCurrency = currencySelect.value;
+    const selectedMonth = monthSelect.value
+    if (selectedBrand && selectedCurrency && selectedMonth) {
+      fetchData(selectedBrand, selectedCurrency, selectedMonth);
     }
   });
 
   document.addEventListener("DOMContentLoaded", () => {
     //showTab("Daily");
+   
+    const monthNames = [
+      "January", "February", "March", "April", "May", "June",
+      "July", "August", "September", "October", "November", "December"
+    ];
+    
+    const today = new Date();
+    const currentMonth = today.getMonth(); // 0-11
+    const currentYear = today.getFullYear();
+
+    monthNames.forEach((month, index) => {
+      const option = document.createElement("option");
+      option.value = month; // Use 1-12
+      option.textContent = `${month} ${currentYear}`;
+      if (index > currentMonth) {
+        option.disabled = true; // Disable future months
+      }
+      if (index === currentMonth) {
+        option.selected = true;
+      }
+      monthSelect.appendChild(option);
+    });
+
     if (window.lucide) window.lucide.createIcons();
-    fetchData("BAJI", "BDT");
     populateCurrencyDropdown("BAJI");
+    fetchData(brandSelect.value, currencySelect.value, monthSelect.value);
   });
 
   // Resize on window
