@@ -78,7 +78,7 @@ yesterday_label = yesterday.strftime('%d/%m/%Y')
 @router.get("/dashboard", response_class=HTMLResponse)
 def dashboard(request: Request, user=Depends(auth_required)):
     return templates.TemplateResponse(
-        "dashboard/facebook.html",
+        "dashboard/index.html",
         {
             "request": request,
             "user": user,
