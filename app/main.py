@@ -3,6 +3,7 @@ from fastapi.staticfiles import StaticFiles
 from fastapi.templating import Jinja2Templates
 from fastapi.middleware.cors import CORSMiddleware
 from app.routes import views, auth, sheets
+from app.routes.team import monitoring
 
 origins = [
     "http://localhost:8000",
@@ -26,3 +27,6 @@ templates = Jinja2Templates(directory="app/templates")
 app.include_router(views.router)
 app.include_router(auth.router)
 app.include_router(sheets.router)
+
+# Include monitoring routes
+app.include_router(monitoring.router)

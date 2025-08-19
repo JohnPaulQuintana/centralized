@@ -70,3 +70,7 @@ Avoid using it on:
     - /auth/* routes
     - public pages (e.g., homepage, landing page)
 
+
+TO RUN:
+uvicorn app.main:app --reload
+

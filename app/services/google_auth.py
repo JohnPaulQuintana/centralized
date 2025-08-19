@@ -2,7 +2,7 @@ import httpx
 
 GOOGLE_CLIENT_ID = "266581007685-pd687uda2mlgdgccdbbnsedk2lu6ssb4.apps.googleusercontent.com"
 
-ALLOWED_EMAILS = {"jpquintana2024@gmail.com", "jpquintana01@gmail.com", "exousia.navi@auroramy.com"}
+ALLOWED_EMAILS = {"jpquintana2024@gmail.com", "flynn.rider@auroramy.com", "jpquintana01@gmail.com", "exousia.navi@auroramy.com"}
 
 async def verify_token(token: str):
     async with httpx.AsyncClient() as client:

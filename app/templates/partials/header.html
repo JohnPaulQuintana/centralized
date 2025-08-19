@@ -15,8 +15,8 @@
       </p>
     </div>
 
-    <!-- Spreadsheet + Avatar -->
-    <div class="flex items-center gap-3">
+    <!-- Spreadsheet + Avatar Dropdown -->
+    <div class="flex items-center gap-3 relative">
       <a
         href="/"
         target="_blank"
@@ -25,11 +25,27 @@
       >
         <i data-lucide="table" class="w-4 h-4"></i> Spreadsheet
       </a>
-      <img
-        src="{{ user.picture }}"
-        alt="User Avatar"
-        class="w-10 h-10 rounded-full border object-cover hidden md:block"
-      />
+
+      <!-- Avatar with dropdown -->
+      <div class="relative">
+        <button id="avatarBtn" class="focus:outline-none">
+          <img
+            src="{{ user.picture }}"
+            alt="User Avatar"
+            class="w-10 h-10 rounded-full border object-cover hidden md:block cursor-pointer"
+          />
+        </button>
+
+        <!-- Dropdown menu -->
+        <div id="avatarDropdown" class="hidden absolute right-0 mt-2 w-48 bg-white border rounded-lg shadow-lg py-2 z-50">
+          <a href="/monitoring" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">
+            📊 Monitoring
+          </a>
+          <a href="/logout" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">
+            🚪 Logout
+          </a>
+        </div>
+      </div>
     </div>
   </div>
 
@@ -48,6 +64,21 @@
         {{ tab }}
       </button>
       {% endfor %}
-      </div>
+    </div>
   </div>
 </header>
+
+<script>
+  const avatarBtn = document.getElementById("avatarBtn");
+  const avatarDropdown = document.getElementById("avatarDropdown");
+
+  avatarBtn.addEventListener("click", () => {
+    avatarDropdown.classList.toggle("hidden");
+  });
+
+  document.addEventListener("click", (e) => {
+    if (!avatarBtn.contains(e.target) && !avatarDropdown.contains(e.target)) {
+      avatarDropdown.classList.add("hidden");
+    }
+  });
+</script>
